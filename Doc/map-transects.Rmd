@@ -1,0 +1,64 @@
+---
+title: "IWCPS Transect Planning"
+author: "Kevin L. Stierhoff"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Install and Load packages
+# Install and load pacman (library management package)
+if (!require("pacman")) install.packages("pacman")
+
+# Install and load required packages from CRAN ---------------------------------
+pacman::p_load(tidyverse,swfscMisc,sf,mapview,lubridate,here,
+               knitr,leaflet,htmltools,leafem,googledrive,
+               pgirmess,bookdown,fs,rnaturalearth,
+               fs,concaveman,gt)
+
+# surveyR
+pacman::p_load_gh("kstierhoff/surveyR")
+pacman::p_load_gh("kstierhoff/atm")
+
+# Set global knitr chunk options
+if (.Platform$OS.type == "unix") {
+  # Do not specify Cairo device for MacOS
+  knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = FALSE,
+                        fig.align = 'center', dev = "png", dpi = 150, out.width = "100%")
+} else {
+  knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = FALSE,
+                        fig.align = 'center', dev = "png", dpi = 150, out.width = "100%",
+                        dev.args = list(type = "cairo"))
+}
+
+# Create output directories
+dir_create(here("Figs")) 
+```  
+
+## Map transect scenarios
+
+```{r import-waypoint-files}
+# Get SWFSC waypoint files from Google Drive
+# 10 nmi spacing
+wpts.swfsc.10nmi <- read_csv(here("Data/Nav/route_plan_swfsc_10nm.csv")) %>% 
+  project_df(to = 3310)
+
+# 15 nmi spacing
+wpts.swfsc.15nmi <- read_csv(here("Data/Nav/route_plan_swfsc_15nm.csv")) %>% 
+  project_df(to = 3310)
+```
+
+```{r map-transects}
+load(here("Data/Map/basemap.Rdata"))
+
+transect.map.swfsc <- base.map + 
+  geom_path(data = wpts.swfsc.10nmi, aes(X, Y, group = Transect), colour = "red") +
+  geom_path(data = wpts.swfsc.15nmi, aes(X, Y, group = Transect), colour = "blue") 
+  
+ggsave(transect.map.swfsc,
+       filename = here("Figs/fig_swfsc_all.png"),
+       height = 10, width = 5)
+```
+
+
+

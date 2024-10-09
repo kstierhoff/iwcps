@@ -13,7 +13,7 @@ if (!require("pacman")) install.packages("pacman")
 # Install and load required packages from CRAN ---------------------------------
 pacman::p_load(tidyverse,swfscMisc,sf,mapview,lubridate,here,
                knitr,leaflet,htmltools,leafem,googledrive,
-               pgirmess,bookdown,fs,rnaturalearth,
+               pgirmess,bookdown,fs,rnaturalearth, patchwork,
                fs,concaveman,gt)
 
 # surveyR
@@ -51,13 +51,19 @@ wpts.swfsc.15nmi <- read_csv(here("Data/Nav/route_plan_swfsc_15nm.csv")) %>%
 ```{r map-transects}
 load(here("Data/Map/basemap.Rdata"))
 
-transect.map.swfsc <- base.map + 
+transect.map.swfsc.10 <- base.map + 
   geom_path(data = wpts.swfsc.10nmi, aes(X, Y, group = Transect), colour = "red") +
-  geom_path(data = wpts.swfsc.15nmi, aes(X, Y, group = Transect), colour = "blue") 
+  ggtitle("SWFSC Transects - 10 nm spacing")
+
+transect.map.swfsc.15 <- base.map + 
+  geom_path(data = wpts.swfsc.15nmi, aes(X, Y, group = Transect), colour = "blue") +
+  ggtitle("SWFSC Transects - 15 nm spacing")
+
+transect.map.swfsc <- transect.map.swfsc.10 + transect.map.swfsc.15
   
 ggsave(transect.map.swfsc,
        filename = here("Figs/fig_swfsc_all.png"),
-       height = 10, width = 5).
+       height = 10, width = 5*2)
 
 include_graphics( here("Figs/fig_swfsc_all.png"))
 ```

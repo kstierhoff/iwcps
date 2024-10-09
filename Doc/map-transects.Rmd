@@ -57,7 +57,9 @@ transect.map.swfsc <- base.map +
   
 ggsave(transect.map.swfsc,
        filename = here("Figs/fig_swfsc_all.png"),
-       height = 10, width = 5)
+       height = 10, width = 5).
+
+include_graphics( here("Figs/fig_swfsc_all.png"))
 ```
 
 
